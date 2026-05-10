@@ -1,0 +1,4 @@
+.tmp/
+*.log
+docker-backup-*.zip
+!docker-images/.gitkeep

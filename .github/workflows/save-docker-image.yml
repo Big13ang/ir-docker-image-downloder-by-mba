@@ -1,0 +1,145 @@
+name: Save Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "Docker image name, for example nginx:alpine"
+        required: true
+        type: string
+      output_name:
+        description: "Optional output name. Leave empty to generate from image name."
+        required: false
+        type: string
+        default: ""
+      compression:
+        description: "Compression method"
+        required: true
+        type: choice
+        default: zstd
+        options:
+          - zstd
+          - gzip
+          - xz
+          - none
+      zstd_level:
+        description: "Zstd compression level, 1-19"
+        required: true
+        type: string
+        default: "10"
+      split_size_mb:
+        description: "Split files larger than this size in MB"
+        required: true
+        type: string
+        default: "1900"
+      commit_to_repo:
+        description: "Commit generated files to this repository"
+        required: true
+        type: boolean
+        default: true
+      create_release:
+        description: "Create a GitHub Release with a ready-to-use zip"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  save-image:
+    name: Save image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zstd pigz xz-utils zip git-lfs
+          git lfs install
+
+      - name: Prepare scripts
+        run: chmod +x scripts/*.sh
+
+      - name: Save Docker image
+        env:
+          COMPRESSION: ${{ inputs.compression }}
+          ZSTD_LEVEL: ${{ inputs.zstd_level }}
+          SPLIT_SIZE_MB: ${{ inputs.split_size_mb }}
+        run: |
+          ./scripts/save-image.sh "${{ inputs.image }}" "${{ inputs.output_name }}"
+
+      - name: Build release package
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(ls -t docker-images/*.manifest.json | head -n 1)"
+          base="$(basename "$manifest" .manifest.json)"
+          package_dir=".tmp/docker-backup-${base}"
+          zip_name="docker-backup-${base}.zip"
+
+          rm -rf "$package_dir"
+          mkdir -p "$package_dir/docker-images" "$package_dir/scripts"
+
+          cp README.md QUICK_START.md "$package_dir/"
+          cp scripts/restore-linux.sh scripts/restore-mac.sh scripts/restore-windows.ps1 "$package_dir/scripts/"
+          cp "docker-images/${base}"* "$package_dir/docker-images/"
+
+          (cd ".tmp" && zip -r "../${zip_name}" "docker-backup-${base}")
+
+          echo "base=${base}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=${zip_name}" >> "$GITHUB_OUTPUT"
+          echo "package_dir=${package_dir}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.base }}
+          path: |
+            ${{ steps.package.outputs.zip_name }}
+            docker-images/${{ steps.package.outputs.base }}*
+
+      - name: Commit generated files
+        if: ${{ inputs.commit_to_repo }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .gitattributes docker-images/
+          if git diff --cached --quiet; then
+            echo "No generated files to commit."
+          else
+            git commit -m "Add Docker image backup for ${{ inputs.image }}"
+            git push
+          fi
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="backup-${{ steps.package.outputs.base }}-${{ github.run_number }}"
+          title="Docker backup: ${{ inputs.image }}"
+          body_file=".tmp/release-notes.md"
+
+          cat > "$body_file" <<EOF
+          Docker image backup for:
+
+          \`${{ inputs.image }}\`
+
+          Download the ZIP, extract it, then run the restore script for your OS.
+          See \`QUICK_START.md\` inside the ZIP.
+          EOF
+
+          gh release create "$tag" "${{ steps.package.outputs.zip_name }}" \
+            --title "$title" \
+            --notes-file "$body_file"
