@@ -13,11 +13,12 @@ if ([string]::IsNullOrWhiteSpace($ImageDir)) {
     $ImageDir = Join-Path $RootDir "docker-images"
 }
 
-$Manifest = Get-ChildItem -Path $ImageDir -Filter "*.manifest.json" | Sort-Object Name | Select-Object -First 1
+$Manifest = Get-ChildItem -Path $ImageDir -Filter "*.manifest.json" -Recurse | Sort-Object FullName | Select-Object -First 1
 if (-not $Manifest) {
     throw "No manifest found in $ImageDir"
 }
 
+$ImageDir = $Manifest.DirectoryName
 $Meta = Get-Content -Raw -Path $Manifest.FullName | ConvertFrom-Json
 $Base = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetFileNameWithoutExtension($Manifest.Name))
 $Compression = $Meta.compression

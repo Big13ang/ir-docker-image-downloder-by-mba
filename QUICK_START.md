@@ -54,36 +54,36 @@ brew install zstd xz
 اگر فایل split شده باشد، معمولا فایل‌هایی شبیه این دارید:
 
 ```text
-docker-images/my-image.part-001
-docker-images/my-image.part-002
-docker-images/my-image.manifest.json
+docker-images/my-image/my-image.part-001
+docker-images/my-image/my-image.part-002
+docker-images/my-image/my-image.manifest.json
 ```
 
 برای zstd:
 
 ```bash
-cat docker-images/my-image.part-* | zstd -d -c | docker load
+cat docker-images/my-image/my-image.part-* | zstd -d -c | docker load
 ```
 
 برای gzip:
 
 ```bash
-cat docker-images/my-image.part-* | gunzip -c | docker load
+cat docker-images/my-image/my-image.part-* | gunzip -c | docker load
 ```
 
 برای xz:
 
 ```bash
-cat docker-images/my-image.part-* | xz -d -c | docker load
+cat docker-images/my-image/my-image.part-* | xz -d -c | docker load
 ```
 
 اگر فایل split نشده باشد:
 
 ```bash
-zstd -d -c docker-images/my-image.tar.zst | docker load
-gunzip -c docker-images/my-image.tar.gz | docker load
-xz -d -c docker-images/my-image.tar.xz | docker load
-docker load -i docker-images/my-image.tar
+zstd -d -c docker-images/my-image/my-image.tar.zst | docker load
+gunzip -c docker-images/my-image/my-image.tar.gz | docker load
+xz -d -c docker-images/my-image/my-image.tar.xz | docker load
+docker load -i docker-images/my-image/my-image.tar
 ```
 
 ## بررسی موفقیت
@@ -112,7 +112,7 @@ docker info
 اگر فایل خراب دانلود شده:
 
 ```bash
-sha256sum -c docker-images/*.sha256
+find docker-images -name "*.sha256" -execdir sha256sum -c {} \;
 ```
 
 اگر `zstd` نصب نیست، از بخش نصب ابزارهای مورد نیاز همین فایل استفاده کنید.

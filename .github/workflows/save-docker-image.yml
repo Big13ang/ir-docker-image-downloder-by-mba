@@ -77,8 +77,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          manifest="$(ls -t docker-images/*.manifest.json | head -n 1)"
+          manifest="$(find docker-images -type f -name '*.manifest.json' -printf '%T@ %p\n' | sort -nr | head -n 1 | cut -d' ' -f2-)"
           base="$(basename "$manifest" .manifest.json)"
+          image_dir="$(dirname "$manifest")"
           package_dir=".tmp/docker-backup-${base}"
           zip_name="docker-backup-${base}.zip"
 
@@ -87,11 +88,13 @@ jobs:
 
           cp README.md QUICK_START.md "$package_dir/"
           cp scripts/restore-linux.sh scripts/restore-mac.sh scripts/restore-windows.ps1 "$package_dir/scripts/"
-          cp "docker-images/${base}"* "$package_dir/docker-images/"
+          mkdir -p "$package_dir/${image_dir}"
+          cp "${image_dir}/${base}"* "$package_dir/${image_dir}/"
 
           (cd ".tmp" && zip -r "../${zip_name}" "docker-backup-${base}")
 
           echo "base=${base}" >> "$GITHUB_OUTPUT"
+          echo "image_dir=${image_dir}" >> "$GITHUB_OUTPUT"
           echo "zip_name=${zip_name}" >> "$GITHUB_OUTPUT"
           echo "package_dir=${package_dir}" >> "$GITHUB_OUTPUT"
 
@@ -102,7 +105,7 @@ jobs:
           name: ${{ steps.package.outputs.base }}
           path: |
             ${{ steps.package.outputs.zip_name }}
-            docker-images/${{ steps.package.outputs.base }}*
+            ${{ steps.package.outputs.image_dir }}/${{ steps.package.outputs.base }}*
 
       - name: Commit generated files
         if: ${{ inputs.commit_to_repo }}

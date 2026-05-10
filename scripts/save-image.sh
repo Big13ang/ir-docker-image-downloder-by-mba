@@ -6,7 +6,7 @@ OUTPUT_NAME="${2:-}"
 COMPRESSION="${COMPRESSION:-zstd}"
 ZSTD_LEVEL="${ZSTD_LEVEL:-10}"
 SPLIT_SIZE_MB="${SPLIT_SIZE_MB:-1900}"
-OUTPUT_DIR="${OUTPUT_DIR:-docker-images}"
+OUTPUT_ROOT="${OUTPUT_DIR:-docker-images}"
 
 if [ -z "$IMAGE" ]; then
   echo "Usage: $0 <docker-image> [output-name]"
@@ -29,6 +29,7 @@ else
   OUTPUT_NAME="$(safe_name "$OUTPUT_NAME")"
 fi
 
+OUTPUT_DIR="${OUTPUT_ROOT}/${OUTPUT_NAME}"
 mkdir -p "$OUTPUT_DIR" .tmp
 
 RAW_TAR=".tmp/${OUTPUT_NAME}.tar"
@@ -121,6 +122,7 @@ cat > "$MANIFEST_FILE" <<EOF
 {
   "image": "$IMAGE",
   "output_name": "$OUTPUT_NAME",
+  "directory": "docker-images/$OUTPUT_NAME",
   "compression": "$COMPRESSION",
   "raw_tar_size_bytes": $RAW_SIZE,
   "stored_size_bytes": $COMPRESSED_SIZE,

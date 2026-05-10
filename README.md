@@ -69,18 +69,19 @@ docker-backup-nginx-alpine.zip
 ├── README.md
 ├── QUICK_START.md
 ├── docker-images/
-│   ├── nginx-alpine.part-001
-│   ├── nginx-alpine.part-002
-│   ├── nginx-alpine.manifest.json
-│   ├── nginx-alpine.sha256
-│   └── nginx-alpine.info.txt
+│   └── nginx-alpine/
+│       ├── nginx-alpine.part-001
+│       ├── nginx-alpine.part-002
+│       ├── nginx-alpine.manifest.json
+│       ├── nginx-alpine.sha256
+│       └── nginx-alpine.info.txt
 └── scripts/
     ├── restore-linux.sh
     ├── restore-mac.sh
     └── restore-windows.ps1
 ```
 
-اگر فایل کوچک باشد، به جای `.part-*` یک فایل مثل `nginx-alpine.tar.zst` ساخته می‌شود.
+اگر فایل کوچک باشد، به جای `.part-*` یک فایل مثل `docker-images/nginx-alpine/nginx-alpine.tar.zst` ساخته می‌شود.
 
 ## استفاده محلی
 
@@ -99,9 +100,9 @@ COMPRESSION=zstd ZSTD_LEVEL=12 SPLIT_SIZE_MB=1000 ./scripts/save-image.sh nginx:
 
 ## نکته درباره محدودیت GitHub
 
-برای اینکه فایل‌ها مثل `docker-images/name.tar.zst` مستقیما داخل codebase دیده شوند، این repo از Git LFS برای imageها استفاده نمی‌کند. GitHub فایل‌های بزرگ‌تر از 100MB را در git معمولی reject می‌کند، پس مقدار `split_size_mb` را زیر 100 نگه دارید. پیش‌فرض پروژه `95` است.
+برای اینکه فایل‌ها مثل `docker-images/name/name.tar.zst` مستقیما داخل codebase دیده شوند، این repo از Git LFS برای imageها استفاده نمی‌کند. GitHub فایل‌های بزرگ‌تر از 100MB را در git معمولی reject می‌کند، پس مقدار `split_size_mb` را زیر 100 نگه دارید. پیش‌فرض پروژه `95` است.
 
-اگر image خیلی بزرگ است، workflow آن را به چند فایل `.part-*` تقسیم می‌کند تا همه قطعه‌ها داخل `docker-images/` commit شوند و URL آن‌ها از نوع معمولی `github.com/.../blob/...` باشد، نه `media.githubusercontent.com`.
+اگر image خیلی بزرگ است، workflow آن را به چند فایل `.part-*` تقسیم می‌کند تا همه قطعه‌ها داخل `docker-images/<image-name>/` commit شوند و URL آن‌ها از نوع معمولی `github.com/.../blob/...` باشد، نه `media.githubusercontent.com`.
 
 ## بازیابی دستی
 
@@ -109,19 +110,19 @@ COMPRESSION=zstd ZSTD_LEVEL=12 SPLIT_SIZE_MB=1000 ./scripts/save-image.sh nginx:
 
 ```bash
 # split + zstd
-cat docker-images/name.part-* | zstd -d -c | docker load
+cat docker-images/name/name.part-* | zstd -d -c | docker load
 
 # zstd تک‌فایل
-zstd -d -c docker-images/name.tar.zst | docker load
+zstd -d -c docker-images/name/name.tar.zst | docker load
 
 # gzip تک‌فایل
-gunzip -c docker-images/name.tar.gz | docker load
+gunzip -c docker-images/name/name.tar.gz | docker load
 
 # xz تک‌فایل
-xz -d -c docker-images/name.tar.xz | docker load
+xz -d -c docker-images/name/name.tar.xz | docker load
 
 # tar بدون فشرده‌سازی
-docker load -i docker-images/name.tar
+docker load -i docker-images/name/name.tar
 ```
 
 ## نوشته شده توسط MBA

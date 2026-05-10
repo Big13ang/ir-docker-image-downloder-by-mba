@@ -2,16 +2,17 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE_DIR="${IMAGE_DIR:-$ROOT_DIR/docker-images}"
+IMAGE_ROOT="${IMAGE_DIR:-$ROOT_DIR/docker-images}"
 
 command -v docker >/dev/null 2>&1 || { echo "docker is required"; exit 1; }
 
-MANIFEST="$(find "$IMAGE_DIR" -maxdepth 1 -type f -name '*.manifest.json' | sort | head -n 1)"
+MANIFEST="$(find "$IMAGE_ROOT" -type f -name '*.manifest.json' | sort | head -n 1)"
 if [ -z "$MANIFEST" ]; then
-  echo "No manifest found in $IMAGE_DIR"
+  echo "No manifest found in $IMAGE_ROOT"
   exit 1
 fi
 
+IMAGE_DIR="$(dirname "$MANIFEST")"
 BASE="$(basename "$MANIFEST" .manifest.json)"
 COMPRESSION="$(sed -n 's/.*"compression"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$MANIFEST" | head -n 1)"
 SPLIT="$(sed -n 's/.*"split"[[:space:]]*:[[:space:]]*\([^,]*\).*/\1/p' "$MANIFEST" | head -n 1 | tr -d ' ')"
