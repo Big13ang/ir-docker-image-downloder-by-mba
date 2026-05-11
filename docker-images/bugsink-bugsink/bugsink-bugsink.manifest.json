@@ -1,0 +1,18 @@
+{
+  "image": "bugsink/bugsink",
+  "image_repository": "bugsink/bugsink",
+  "version_type": "tag",
+  "version": "latest",
+  "image_id": "sha256:dbcd3db839b22892f9c92b5e111e7721707ca0a7ed9d362f9c0869eeed5e3ba8",
+  "output_name": "bugsink-bugsink",
+  "directory": "docker-images/bugsink-bugsink",
+  "archive_file": "bugsink-bugsink.tar.gz",
+  "compression": "gzip",
+  "raw_tar_size_bytes": 402552320,
+  "stored_size_bytes": 155330233,
+  "split": true,
+  "split_size_mb": 95,
+  "part_count": 2,
+  "created_at": "2026-05-11T20:37:26Z",
+  "checksum_file": "bugsink-bugsink.sha256"
+}
