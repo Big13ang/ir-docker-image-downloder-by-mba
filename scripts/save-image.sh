@@ -12,7 +12,6 @@ BRANCH="${GITHUB_REF_NAME:-master}"
 PROJECT_NAME="Docker Image Saver"
 PROJECT_TEAM="اپ ساز"
 PROJECT_WEBSITE="https://appsaz.ir"
-PROJECT_DEVELOPER="محمد بهشت آئین"
 
 if [ -z "$IMAGE" ]; then
   echo "Usage: $0 <docker-image> [output-name]"
@@ -327,7 +326,7 @@ done
 cat > "$README_FILE" <<EOF
 # Docker image backup: \`$IMAGE\`
 
-این فولدر همه چیز لازم برای دانلود و بازیابی این Docker image را دارد، بدون اینکه سیستم مقصد مستقیم به Docker Hub یا registry اصلی وصل شود.
+این فولدر برای این ساخته شده که بازیابی این Docker image تا جای ممکن ساده و بی‌دردسر باشد؛ مخصوصا وقتی سیستم مقصد به Docker Hub یا registry اصلی دسترسی راحتی ندارد.
 
 ## لینک فایل‌ها
 
@@ -487,9 +486,9 @@ docker images
 
 ## حمایت از پروژه
 
-بزرگ‌ترین حمایت از ما معرفی و منتشر کردن این پروژه است. اگر این backup به شما کمک کرد، لطفا Docker Image Saver را به برنامه‌نویسان، تیم‌ها و شرکت‌هایی که با محدودیت Docker Hub یا registryها مشکل دارند معرفی کنید.
+بزرگ‌ترین حمایت از ما معرفی و منتشر کردن این پروژه است. اگر این backup به شما کمک کرد، لطفا Docker Image Saver را به یک برنامه‌نویس، تیم یا شرکتی که با محدودیت Docker Hub یا registryها مشکل دارد معرفی کنید.
 
-همچنین می‌توانید با Star دادن، Fork کردن، ثبت Issue، ارسال Pull Request یا حمایت مالی به بهتر شدن این ابزار کمک کنید.
+ما این ابزار را برای کم کردن فشار از روی تیم‌های فنی ساختیم. Star دادن، Fork کردن، ثبت Issue، ارسال Pull Request، معرفی پروژه و حمایت مالی، همه برای بهتر شدنش ارزشمندند.
 
 ### Donate
 
@@ -539,9 +538,9 @@ bc1qnhjk9zqmpg3wytw47luy8qsu2jhwpz83ll265k
 
 ساخته شده با \`$PROJECT_NAME\` از تیم \`$PROJECT_TEAM\`.
 
-وب‌سایت اپ ساز: $PROJECT_WEBSITE
+ارادتمند، \`بهشت آئین\` از تیم \`$PROJECT_TEAM\`
 
-برنامه‌نویس پروژه: \`$PROJECT_DEVELOPER\`
+وب‌سایت اپ ساز: $PROJECT_WEBSITE
 
 Generated at: \`$END_TIME\`
 EOF
