@@ -1,0 +1,9 @@
+Image: node:22-alpine
+Repository: node
+Version type: tag
+Version: 22-alpine
+Platform: linux/amd64
+Image ID: sha256:04a4709b55a8e3d7aa9ae8f49dc4ab92863d9bed96cd09f9870984b1e77435ed
+Repo digests:
+node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f
+Created at: 2026-05-13T13:26:01Z

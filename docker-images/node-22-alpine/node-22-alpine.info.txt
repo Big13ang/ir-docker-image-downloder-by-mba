@@ -1,0 +1,15 @@
+Image: node:22-alpine
+Repository: node
+Version type: tag
+Version: 22-alpine
+Platform: linux/amd64
+Image ID: sha256:04a4709b55a8e3d7aa9ae8f49dc4ab92863d9bed96cd09f9870984b1e77435ed
+Output name: node-22-alpine
+Compression: none
+Archive file: node-22-alpine.tar
+Raw tar size: 165229568 bytes
+Stored size: 165229568 bytes
+Split: true
+Part count: 4
+Started: 2026-05-13T13:25:58Z
+Finished: 2026-05-13T13:26:01Z

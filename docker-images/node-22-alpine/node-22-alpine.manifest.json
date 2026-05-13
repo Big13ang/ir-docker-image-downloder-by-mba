@@ -1,0 +1,19 @@
+{
+  "image": "node:22-alpine",
+  "image_repository": "node",
+  "version_type": "tag",
+  "version": "22-alpine",
+  "platform": "linux/amd64",
+  "image_id": "sha256:04a4709b55a8e3d7aa9ae8f49dc4ab92863d9bed96cd09f9870984b1e77435ed",
+  "output_name": "node-22-alpine",
+  "directory": "docker-images/node-22-alpine",
+  "archive_file": "node-22-alpine.tar",
+  "compression": "none",
+  "raw_tar_size_bytes": 165229568,
+  "stored_size_bytes": 165229568,
+  "split": true,
+  "split_size_mb": 50,
+  "part_count": 4,
+  "created_at": "2026-05-13T13:26:01Z",
+  "checksum_file": "node-22-alpine.sha256"
+}
