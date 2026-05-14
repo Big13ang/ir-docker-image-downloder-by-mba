@@ -1,0 +1,15 @@
+Image: albrechtloh/openwrt-docker
+Repository: albrechtloh/openwrt-docker
+Version type: tag
+Version: latest
+Platform: linux/arm64
+Image ID: sha256:f4f3947d3cb6b7c6a26599144b3cfd61670b8fb55eeec200fee09514db2e8f49
+Output name: albrechtloh-openwrt-docker
+Compression: none
+Archive file: albrechtloh-openwrt-docker.tar
+Raw tar size: 273858560 bytes
+Stored size: 273858560 bytes
+Split: true
+Part count: 3
+Started: 2026-05-14T18:41:38Z
+Finished: 2026-05-14T18:41:46Z
