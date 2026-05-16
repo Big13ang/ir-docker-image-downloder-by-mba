@@ -23,6 +23,8 @@ if ls "$IMAGE_DIR/${BASE}".*.part-* >/dev/null 2>&1; then
   PART_GLOB="$IMAGE_DIR/${BASE}".*.part-*
 elif ls "$IMAGE_DIR/${BASE}.part-"* >/dev/null 2>&1; then
   PART_GLOB="$IMAGE_DIR/${BASE}.part-"*
+elif ls "$IMAGE_DIR/${BASE}-part-"* >/dev/null 2>&1; then
+  PART_GLOB="$IMAGE_DIR/${BASE}-part-"*
 else
   case "$COMPRESSION" in
     zstd) FILE="$IMAGE_DIR/${BASE}.tar.zst" ;;

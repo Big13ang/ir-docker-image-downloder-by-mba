@@ -74,14 +74,14 @@ Windows PowerShell:
 اگر فایل‌ها این شکلی هستند:
 
 ```text
-my-image.tar.part-000
-my-image.tar.part-001
+my-image-part-000.tar
+my-image-part-001.tar
 ```
 
 Linux/macOS:
 
 ```bash
-cat my-image.tar.part-* > my-image.tar
+cat my-image-part-*.tar > my-image.tar
 docker load -i my-image.tar
 docker images
 ```
@@ -90,7 +90,7 @@ Windows PowerShell:
 
 ```powershell
 $out = [System.IO.File]::Create("my-image.tar")
-Get-ChildItem -Filter "my-image.tar.part-*" | Sort-Object Name | ForEach-Object {
+Get-ChildItem -Filter "my-image-part-*.tar" | Sort-Object Name | ForEach-Object {
     $in = [System.IO.File]::OpenRead($_.FullName)
     try { $in.CopyTo($out) } finally { $in.Close() }
 }
@@ -104,14 +104,14 @@ docker images
 اگر فایل‌ها این شکلی هستند:
 
 ```text
-my-image.tar.zst.part-000
-my-image.tar.zst.part-001
+my-image-part-000.tar.zst
+my-image-part-001.tar.zst
 ```
 
 Linux/macOS:
 
 ```bash
-cat my-image.tar.zst.part-* > my-image.tar.zst
+cat my-image-part-*.tar.zst > my-image.tar.zst
 zstd -d -c my-image.tar.zst | docker load
 docker images
 ```
@@ -120,7 +120,7 @@ Windows PowerShell:
 
 ```powershell
 $out = [System.IO.File]::Create("my-image.tar.zst")
-Get-ChildItem -Filter "my-image.tar.zst.part-*" | Sort-Object Name | ForEach-Object {
+Get-ChildItem -Filter "my-image-part-*.tar.zst" | Sort-Object Name | ForEach-Object {
     $in = [System.IO.File]::OpenRead($_.FullName)
     try { $in.CopyTo($out) } finally { $in.Close() }
 }

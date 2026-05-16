@@ -141,8 +141,8 @@ docker-images/
 └── bugsink-bugsink/
     ├── README.md
     ├── VERSION.txt
-    ├── bugsink-bugsink.tar.part-000
-    ├── bugsink-bugsink.tar.part-001
+    ├── bugsink-bugsink-part-000.tar
+    ├── bugsink-bugsink-part-001.tar
     ├── bugsink-bugsink.manifest.json
     ├── bugsink-bugsink.sha256
     └── bugsink-bugsink.info.txt
@@ -251,11 +251,11 @@ GitHub فایل‌های بزرگ‌تر از 100MB را در git معمولی r
 نام قطعه‌ها واضح است:
 
 ```text
-bugsink-bugsink.tar.part-000
-bugsink-bugsink.tar.part-001
+bugsink-bugsink-part-000.tar
+bugsink-bugsink-part-001.tar
 ```
 
-یعنی در حالت پیش‌فرض باید قطعه‌ها به `bugsink-bugsink.tar` تبدیل شوند و بعد مستقیم با Docker load شوند.
+یعنی در حالت پیش‌فرض باید قطعه‌ها به `bugsink-bugsink.tar` تبدیل شوند و بعد مستقیم با Docker load شوند. این نام‌گذاری برای دانلودرها و ربات‌هایی که با چند پسوند پشت سر هم مشکل دارند هم ساده‌تر است.
 
 ## استفاده محلی
 

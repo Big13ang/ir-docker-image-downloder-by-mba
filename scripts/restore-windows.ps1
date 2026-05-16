@@ -79,6 +79,9 @@ if ($IsSplit) {
         $parts = Get-ChildItem -Path $ImageDir -Filter "$Base.part-*" | Sort-Object Name
     }
     if (-not $parts) {
+        $parts = Get-ChildItem -Path $ImageDir -Filter "$Base-part-*" | Sort-Object Name
+    }
+    if (-not $parts) {
         throw "No split parts found for $Base"
     }
     $TempCombined = Join-Path $env:TEMP "$Base.compressed"

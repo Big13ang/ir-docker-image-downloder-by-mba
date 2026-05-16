@@ -155,21 +155,23 @@ fi
 
 COMPRESSED_SIZE="$(wc -c < "$OUT_FILE" | tr -d ' ')"
 ARCHIVE_FILE="$(basename "$OUT_FILE")"
+PART_SUFFIX="${ARCHIVE_FILE#${OUTPUT_NAME}}"
+PART_FILE_PATTERN="${OUTPUT_NAME}-part-*${PART_SUFFIX}"
 SPLIT_SIZE_BYTES=$((SPLIT_SIZE_MB * 1024 * 1024))
 SPLIT=false
 PART_COUNT=0
 
 if [ "$COMPRESSED_SIZE" -gt "$SPLIT_SIZE_BYTES" ]; then
   echo "Splitting into ${SPLIT_SIZE_MB}MB parts"
-  split -b "${SPLIT_SIZE_MB}M" -d -a 3 "$OUT_FILE" "${OUT_FILE}.part-"
+  split -b "${SPLIT_SIZE_MB}M" -d -a 3 --additional-suffix="$PART_SUFFIX" "$OUT_FILE" "${OUTPUT_DIR}/${OUTPUT_NAME}-part-"
   rm -f "$OUT_FILE"
   SPLIT=true
-  PART_COUNT="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "${ARCHIVE_FILE}.part-*" | wc -l | tr -d ' ')"
+  PART_COUNT="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "$PART_FILE_PATTERN" | wc -l | tr -d ' ')"
 fi
 
 SHA_FILE="${BASE}.sha256"
 if [ "$SPLIT" = true ]; then
-  (cd "$OUTPUT_DIR" && sha256sum "${ARCHIVE_FILE}".part-* > "${OUTPUT_NAME}.sha256")
+  (cd "$OUTPUT_DIR" && sha256sum $PART_FILE_PATTERN > "${OUTPUT_NAME}.sha256")
 else
   (cd "$OUTPUT_DIR" && sha256sum "$ARCHIVE_FILE" > "${OUTPUT_NAME}.sha256")
 fi
@@ -228,6 +230,7 @@ cat > "$MANIFEST_FILE" <<EOF
   "stored_size_bytes": $COMPRESSED_SIZE,
   "split": $SPLIT,
   "split_size_mb": $SPLIT_SIZE_MB,
+  "part_file_pattern": "$PART_FILE_PATTERN",
   "part_count": $PART_COUNT,
   "created_at": "$END_TIME",
   "checksum_file": "$(basename "$SHA_FILE")"
@@ -270,7 +273,7 @@ case "$COMPRESSION" in
 esac
 
 if [ "$SPLIT" = true ]; then
-  DOWNLOAD_FILES="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "${ARCHIVE_FILE}.part-*" -printf '%f\n' | sort)"
+  DOWNLOAD_FILES="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "$PART_FILE_PATTERN" -printf '%f\n' | sort)"
   DOWNLOAD_COMMANDS=""
   POWERSHELL_DOWNLOAD_COMMANDS=""
   for file in $DOWNLOAD_FILES; do
@@ -279,27 +282,27 @@ if [ "$SPLIT" = true ]; then
     POWERSHELL_DOWNLOAD_COMMANDS="${POWERSHELL_DOWNLOAD_COMMANDS}Invoke-WebRequest -Uri \"${RAW_BASE_URL}/${file}\" -OutFile \"${file}\"
 "
   done
-  POWERSHELL_HASH_COMMAND="Get-FileHash -Algorithm SHA256 ${ARCHIVE_FILE}.part-*"
+  POWERSHELL_HASH_COMMAND="Get-FileHash -Algorithm SHA256 ${PART_FILE_PATTERN}"
   case "$COMPRESSION" in
     zstd)
-      EXTRACT_COMMAND="cat ${ARCHIVE_FILE}.part-* > ${ARCHIVE_FILE}"
+      EXTRACT_COMMAND="cat ${PART_FILE_PATTERN} > ${ARCHIVE_FILE}"
       LOAD_COMMAND="zstd -d -c ${ARCHIVE_FILE} | docker load"
       ;;
     gzip)
-      EXTRACT_COMMAND="cat ${ARCHIVE_FILE}.part-* > ${ARCHIVE_FILE}"
+      EXTRACT_COMMAND="cat ${PART_FILE_PATTERN} > ${ARCHIVE_FILE}"
       LOAD_COMMAND="gunzip -c ${ARCHIVE_FILE} | docker load"
       ;;
     xz)
-      EXTRACT_COMMAND="cat ${ARCHIVE_FILE}.part-* > ${ARCHIVE_FILE}"
+      EXTRACT_COMMAND="cat ${PART_FILE_PATTERN} > ${ARCHIVE_FILE}"
       LOAD_COMMAND="xz -d -c ${ARCHIVE_FILE} | docker load"
       ;;
     none)
-      EXTRACT_COMMAND="cat ${ARCHIVE_FILE}.part-* > ${ARCHIVE_FILE}"
+      EXTRACT_COMMAND="cat ${PART_FILE_PATTERN} > ${ARCHIVE_FILE}"
       LOAD_COMMAND="docker load -i ${ARCHIVE_FILE}"
       ;;
   esac
   POWERSHELL_COMBINE_COMMAND='$out = [System.IO.File]::Create("'"${ARCHIVE_FILE}"'")
-Get-ChildItem -Filter "'"${ARCHIVE_FILE}.part-*"'" | Sort-Object Name | ForEach-Object {
+Get-ChildItem -Filter "'"${PART_FILE_PATTERN}"'" | Sort-Object Name | ForEach-Object {
     $in = [System.IO.File]::OpenRead($_.FullName)
     try { $in.CopyTo($out) } finally { $in.Close() }
 }
