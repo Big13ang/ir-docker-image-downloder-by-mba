@@ -334,7 +334,7 @@ fi
 
 FILE_LINKS=""
 for file in $DOWNLOAD_FILES "${OUTPUT_NAME}.manifest.json" "${OUTPUT_NAME}.sha256" "${OUTPUT_NAME}.info.txt" "VERSION.txt"; do
-  FILE_LINKS="${FILE_LINKS}- [${file}](${PAGE_BASE_URL}/${file})
+  FILE_LINKS="${FILE_LINKS}- [${file}](${RAW_BASE_URL}/${file})
 "
 done
 
@@ -346,6 +346,11 @@ cat > "$README_FILE" <<EOF
 ## لینک فایل‌ها
 
 $FILE_LINKS
+
+Important: the links above are direct raw download links. If a downloaded
+\`.part-*\` file is only a few hundred KB instead of about ${SPLIT_SIZE_MB}MB,
+you probably saved the GitHub HTML page, not the Docker image chunk. Re-download
+with the Linux/macOS or Windows commands below.
 
 Folder page: [$FOLDER_URL]($FOLDER_URL)
 
